@@ -6,7 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const FT_API_URL = "https://api.pole-emploi.io/partenaire/rome/v1";
+const FT_API_URL = "https://api.francetravail.io/romeo/v2"";
 const CLIENT_ID = process.env.FT_CLIENT_ID;
 const CLIENT_SECRET = process.env.FT_CLIENT_SECRET;
 
