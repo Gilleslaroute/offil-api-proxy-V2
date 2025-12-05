@@ -1,23 +1,24 @@
 steps:
-  # 1. Build de l'image Docker
+  # --- BUILD DOCKER IMAGE ---
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/offil-rome-proxy', '.']
+    args: ['build', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy', '.']
 
-  # 2. Push de l'image dans Container Registry / Artifact Registry
+  # --- PUSH IMAGE ---
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/offil-rome-proxy']
+    args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy']
 
-  # 3. Déploiement sur Cloud Run
+  # --- DEPLOY TO CLOUD RUN ---
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       [
         'run', 'deploy', 'offil-rome-proxy',
-        '--image', 'gcr.io/$PROJECT_ID/offil-rome-proxy',
+        '--image', 'europe-west1-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy',
         '--platform', 'managed',
         '--region', 'europe-west1',
-        '--allow-unauthenticated'
+        '--allow-unauthenticated',
+        '--port', '8080'
       ]
 
 images:
-  - 'gcr.io/$PROJECT_ID/offil-rome-proxy'
+  - 'europe-west1-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy'
