@@ -23,5 +23,3 @@ steps:
 images:
   - 'europe-west9-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy'
   
-  options:
-  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
