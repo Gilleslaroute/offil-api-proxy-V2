@@ -6,31 +6,46 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post("/proxy", async (req, res) => {
+const FT_API_URL = "https://api.pole-emploi.io/partenaire/rome/v1";
+const CLIENT_ID = process.env.FT_CLIENT_ID;
+const CLIENT_SECRET = process.env.FT_CLIENT_SECRET;
+
+async function getToken() {
+  const res = await fetch("https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=/partenaire", {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: new URLSearchParams({
+      grant_type: "client_credentials",
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+      scope: "application_" + CLIENT_ID + " api_romev1"
+    })
+  });
+  return res.json();
+}
+
+app.get("/search", async (req, res) => {
   try {
-    const { url, method = "POST", headers = {}, body } = req.body;
+    const { q } = req.query;
+    const tokenData = await getToken();
+    const token = tokenData.access_token;
 
-    const response = await fetch(url, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
+    const response = await fetch(`${FT_API_URL}/search?q=${encodeURIComponent(q)}`, {
+      headers: { Authorization: "Bearer " + token }
     });
 
-    const data = await response.json().catch(() => null);
+    const data = await response.json();
+    res.json(data);
 
-    res.status(response.status).json({
-      ok: response.ok,
-      status: response.status,
-      data,
-    });
   } catch (err) {
-    console.error("Proxy error:", err);
-    res.status(500).json({ error: "Proxy failure", details: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
 app.get("/", (req, res) => {
-  res.send("OFFIL API Proxy V2 is running");
+  res.send("OFFIL API PROXY — OK");
 });
 
-app.listen(8080, () => console.log("Proxy running on port 8080"));
+const port = process.env.PORT || 8080;
+app.listen(port, () => console.log("Proxy OFFIL running on port " + port));
+
