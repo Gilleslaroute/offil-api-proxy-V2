@@ -1,11 +1,11 @@
 steps:
   # --- BUILD DOCKER IMAGE ---
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy', '.']
+    args: ['build', '-t', 'europe-west9-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy', '.']
 
   # --- PUSH IMAGE ---
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy']
+    args: ['push', 'europe-west9-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy']
 
   # --- DEPLOY TO CLOUD RUN ---
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -13,9 +13,9 @@ steps:
     args:
       [
         'run', 'deploy', 'offil-rome-proxy',
-        '--image', 'europe-west1-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy',
+        '--image', 'europe-west9-docker.pkg.dev/$PROJECT_ID/offil-api/offil-rome-proxy',
         '--platform', 'managed',
-        '--region', 'europe-west1',
+        '--region', 'europe-west9',
         '--allow-unauthenticated',
         '--port', '8080'
       ]
