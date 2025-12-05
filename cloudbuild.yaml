@@ -1,0 +1,23 @@
+steps:
+  # Étape 1 : Construire l’image Docker
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'europe-west9-docker.pkg.dev/$PROJECT_ID/offil-repo/offil-api-proxy', '.']
+
+  # Étape 2 : Pousser l’image dans Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'europe-west9-docker.pkg.dev/$PROJECT_ID/offil-repo/offil-api-proxy']
+
+  # Étape 3 : Déployer dans Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'offil-rome-proxy',
+        '--image', 'europe-west9-docker.pkg.dev/$PROJECT_ID/offil-repo/offil-api-proxy',
+        '--region', 'europe-west9',
+        '--platform', 'managed',
+        '--allow-unauthenticated'
+      ]
+
+images:
+  - 'europe-west9-docker.pkg.dev/$PROJECT_ID/offil-repo/offil-api-proxy'
